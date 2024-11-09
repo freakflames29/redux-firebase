@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FireAuth } from "../firebase/config";
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../redux/AuthSlice";
+import { FireDB } from "../firebase/config";
+import { setDoc, collection } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+
 function Login() {
   const gauth = new GoogleAuthProvider();
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.auth.user);
 
   const loginHandler = () => {
     signInWithPopup(FireAuth, gauth)
@@ -17,6 +23,7 @@ function Login() {
           authActions.setUser({
             email: result.user.email,
             displayName: result.user.displayName,
+            uid: result.user.uid,
           })
         );
       })
@@ -35,10 +42,17 @@ function Login() {
       });
   };
 
+  // to navigate if login and also it restricts users to visit login page if login
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/home");
+    }
+  }, [userInfo]);
+
   return (
     <>
       <button onClick={loginHandler}>Login with google</button>
-      <button onClick={signoutHandler}>Logout</button>
     </>
   );
 }

@@ -14,6 +14,9 @@ const AuthSlice = createSlice({
     clearUser: (state) => {
       state.user = null;
     },
+    setHobby: (state, action) => {
+      state.user.hobby = action.payload.hobby;
+    },
   },
 });
 
